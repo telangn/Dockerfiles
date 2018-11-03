@@ -6,6 +6,8 @@
 # NPM
 # Maven
 
+LABEL Version 1.0
+
 # Pull base image.
 FROM ubuntu:latest
 
@@ -18,14 +20,13 @@ ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 # Define working directory.
 WORKDIR /
 
-# ENTRYPOINT ["/usr/local/bin/mvn-entrypoint.sh"]
+ENTRYPOINT ["/"]
 
 # Define default command.
-# CMD ["bash"]
-# CMD ["mvn"]
+CMD ["mvn", "clean", "install", "-Dheadless=\"on\""]
 
 # Expose ports.
-# EXPOSE 5901
+EXPOSE 5901
 
 ARG MAVEN_VERSION=3.5.4
 ARG USER_HOME_DIR="/root"
@@ -58,4 +59,11 @@ RUN rm -f /tmp/apache-maven.tar.gz
 RUN ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get clean all
+
+COPY ./pom.xml
+COPY ./src
+COPY ./target
+
+RUN mvn clean install -Dheadless="on"
+
 
