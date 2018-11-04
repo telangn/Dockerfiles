@@ -1,15 +1,10 @@
 # Ubuntu Dockerfile
-# Java 8
-# Chrome
-# Git
-# NodeJs
-# NPM
-# Maven
-
-LABEL Version 1.0
+# Installs the following - Java 8, Chrome, Git, NodeJs, NPM, Maven
 
 # Pull base image.
 FROM ubuntu:latest
+
+LABEL version 1.0
 
 # Set environment variables.
 ENV HOME /root
@@ -18,9 +13,9 @@ ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 
 # Define working directory.
-WORKDIR /
+WORKDIR /tmp
 
-ENTRYPOINT ["/"]
+ENTRYPOINT ["/tmp"]
 
 # Define default command.
 CMD ["mvn", "clean", "install", "-Dheadless=\"on\""]
@@ -60,9 +55,11 @@ RUN ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get clean all
 
-COPY ./pom.xml
-COPY ./src
-COPY ./target
+COPY ./pom.xml /tmp
+COPY ./src /tmp
+COPY ./target /tmp
+
+RUN cd /tmp
 
 RUN mvn clean install -Dheadless="on"
 
