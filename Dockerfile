@@ -13,12 +13,12 @@ ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 
 # Define working directory.
-WORKDIR /tmp
+# WORKDIR /
 
-ENTRYPOINT ["/tmp"]
+# ENTRYPOINT ["/"]
 
 # Define default command.
-CMD ["mvn", "clean", "install", "-Dheadless=\"on\""]
+# CMD ["mvn", "clean", "install", "-Dheadless=\"on\""]
 
 # Expose ports.
 EXPOSE 5901
@@ -42,8 +42,9 @@ RUN apt-get install -y --no-install-recommends oracle-java8-installer oracle-jav
 RUN apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 RUN apt-get install -y git wget nodejs
+RUN apt-get update
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
+RUN echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
 RUN apt-get update
 RUN apt-get install -y google-chrome-stable
 RUN mkdir -p /usr/share/maven /usr/share/maven/ref
@@ -52,15 +53,18 @@ RUN echo "${SHA}  /tmp/apache-maven.tar.gz" | sha256sum -c -
 RUN tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1
 RUN rm -f /tmp/apache-maven.tar.gz
 RUN ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+RUN apt-get update
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get clean all
 
-COPY ./pom.xml /tmp
-COPY ./src /tmp
-COPY ./target /tmp
 
-RUN cd /tmp
 
-RUN mvn clean install -Dheadless="on"
+RUN mkdir project
+COPY pom.xml project/
+COPY src/ project/src
+COPY target/ project/target
+RUN chmod 755 -R project/
+RUN ls -al project/
+# RUN cd project/ && mvn clean install -Dheadless="on" 
 
 
