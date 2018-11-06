@@ -56,15 +56,11 @@ RUN ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 RUN apt-get update
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get clean all
-
-
-
 RUN mkdir project
 COPY pom.xml project/
 COPY src/ project/src
 COPY target/ project/target
 RUN chmod 755 -R project/
-RUN ls -al project/
-# RUN cd project/ && mvn clean install -Dheadless="on" 
+RUN cd project/ && mvn clean install -Dheadless="on" 
 
 
